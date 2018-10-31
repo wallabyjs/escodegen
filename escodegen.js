@@ -889,7 +889,8 @@
             // avoid space before method name
             prefix += generateStarSuffix(func) ? '*' : '';
         }
-    }
+        return prefix;
+     }
 
     CodeGenerator.prototype.generatePattern = function (node, precedence, flags) {
         if (node.type === Syntax.Identifier) {
