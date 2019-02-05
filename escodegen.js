@@ -1189,10 +1189,15 @@
                 var guard;
 
                 result = [
-                    'catch' + space + '(',
+                    'catch' + (stmt.param ? (space + '(') : '')
+                ];
+
+                if (stmt.param) {
+                  result = result.concat([
                     that.generateExpression(stmt.param, Precedence.Sequence, E_TTT),
                     ')'
-                ];
+                  ]);
+                }
 
                 if (stmt.guard) {
                     guard = that.generateExpression(stmt.guard, Precedence.Sequence, E_TTT);
