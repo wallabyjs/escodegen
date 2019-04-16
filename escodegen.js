@@ -2343,6 +2343,10 @@
                 return expr.value ? 'true' : 'false';
             }
 
+            if (typeof expr.value === 'bigint') {
+                return expr.raw;
+            }
+
             return generateRegExp(expr.value);
         },
 
