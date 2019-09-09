@@ -2669,6 +2669,10 @@
 
         JSXText: function (expr, precedence, flags) {
           return expr.raw;
+        },
+
+        FieldDefinition: function(expr, precedence, flags) {
+          return expr.raw;
         }
     };
 
