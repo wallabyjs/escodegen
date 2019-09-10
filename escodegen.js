@@ -519,6 +519,9 @@
      * convert generated to a SourceNode when source maps are enabled.
      */
     function toSourceNodeWhenNeeded(generated, node) {
+        if (node && node.type === "PrivateName") {
+            generated = "#" + generated;
+        }
         if (!sourceMap) {
             // with no source maps, generated is either an
             // array or a string.  if an array, flatten it.
@@ -2672,7 +2675,17 @@
         },
 
         FieldDefinition: function(expr, precedence, flags) {
-          return expr.raw;
+            var result = [];
+            if (expr.key.type === 'PrivateName') {
+                result.push('#');
+            }
+            result.push(expr.key.name);
+            if (expr.value) {
+                result.push(' = ');
+                result.push(this.generateExpression(expr.value));
+            }
+            result.push(';');
+            return result;
         }
     };
 
