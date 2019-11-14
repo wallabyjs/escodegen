@@ -2686,6 +2686,14 @@
             }
             result.push(';');
             return result;
+        },
+
+        ImportExpression: function(expr, precedence, flag) {
+            return parenthesize([
+                'import(',
+                this.generateExpression(expr.source, Precedence.Assignment, E_TTT),
+                ')'
+            ], Precedence.Call, precedence);
         }
     };
 
