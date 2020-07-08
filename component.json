@@ -15,7 +15,7 @@
         "escodegen.js",
         "package.json"
     ],
-    "version": "1.6.30",
+    "version": "1.6.31",
     "engines": {
         "node": ">=0.10.0"
     },
@@ -31,10 +31,10 @@
         "url": "http://github.com/wallabyjs/escodegen.git"
     },
     "dependencies": {
-        "esprima": "^2.7.1",
-        "optionator": "^0.8.1",
+        "esutils": "^2.0.2",
         "estraverse": "^1.9.1",
-        "esutils": "^2.0.2"
+        "esprima": "^2.7.1",
+        "optionator": "^0.8.1"
     },
     "optionalDependencies": {},
     "devDependencies": {
