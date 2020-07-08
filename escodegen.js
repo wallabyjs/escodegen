@@ -1805,6 +1805,10 @@
 
     CodeGenerator.Expression = {
 
+        PrivateName: function(expr) {
+            return expr.name;
+        },
+
         SequenceExpression: function (expr, precedence, flags) {
             var result, i, iz;
             if (Precedence.Sequence < precedence) {
