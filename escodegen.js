@@ -88,6 +88,7 @@
         Conditional: 2,
         ArrowFunction: 2,
         LogicalOR: 3,
+        NullishCoalescing: 3,
         LogicalAND: 4,
         BitwiseOR: 5,
         BitwiseXOR: 6,
@@ -109,6 +110,7 @@
     };
 
     BinaryPrecedence = {
+        '??': Precedence.NullishCoalescing,
         '||': Precedence.LogicalOR,
         '&&': Precedence.LogicalAND,
         '|': Precedence.BitwiseOR,
@@ -1848,34 +1850,56 @@
         },
 
         BinaryExpression: function (expr, precedence, flags) {
-            var result, currentPrecedence, fragment, leftSource;
+            var result, leftPrecedence, rightPrecedence, currentPrecedence, fragment, leftSource;
             currentPrecedence = BinaryPrecedence[expr.operator];
+
+            leftPrecedence = currentPrecedence;
+            rightPrecedence = currentPrecedence + 1;
+
+            switch (expr.operator) {
+                case '**':
+                    leftPrecedence = Precedence.Postfix;
+                    rightPrecedence = currentPrecedence;
+                    break;
+
+                case '??':
+                    if (expr.left.operator === '||' || expr.left.operator === '&&') {
+                        leftPrecedence = BinaryPrecedence[expr.left.operator] + 1;
+                    }
+
+                    if (expr.right.operator === '||' || expr.right.operator === '&&') {
+                        rightPrecedence = BinaryPrecedence[expr.right.operator] + 1;
+                    }
+
+                    break;
+
+                case '||':
+                    if (expr.left.operator === '??') {
+                        leftPrecedence = BinaryPrecedence[expr.left.operator] + 1;
+                    }
+
+                    break;
+            }
 
             if (currentPrecedence < precedence) {
                 flags |= F_ALLOW_IN;
             }
-
-            fragment = this.generateExpression(expr.left, currentPrecedence, flags);
-
+            fragment = this.generateExpression(expr.left, leftPrecedence, flags);
             leftSource = fragment.toString();
-
             if (leftSource.charCodeAt(leftSource.length - 1) === 0x2F /* / */ && esutils.code.isIdentifierPartES5(expr.operator.charCodeAt(0))) {
                 result = [fragment, noEmptySpace(), expr.operator];
             } else {
                 result = join(fragment, expr.operator);
             }
-
-            fragment = this.generateExpression(expr.right, currentPrecedence + 1, flags);
-
+            fragment = this.generateExpression(expr.right, rightPrecedence, flags);
             if (expr.operator === '/' && fragment.toString().charAt(0) === '/' ||
-            expr.operator.slice(-1) === '<' && fragment.toString().slice(0, 3) === '!--') {
+                expr.operator.slice(-1) === '<' && fragment.toString().slice(0, 3) === '!--') {
                 // If '/' concats with '/' or `<` concats with `!--`, it is interpreted as comment start
                 result.push(noEmptySpace());
                 result.push(fragment);
             } else {
                 result = join(result, fragment);
             }
-
             if (expr.operator === 'in' && !(flags & F_ALLOW_IN)) {
                 return ['(', result, ')'];
             }
