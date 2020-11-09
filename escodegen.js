@@ -1294,6 +1294,7 @@
             return [
                 'export' + space,
                 '*' + space,
+                stmt.exported ? 'as ' + stmt.exported.name + ' ' : '',
                 'from' + space,
                 // ModuleSpecifier
                 this.generateExpression(stmt.source, Precedence.Sequence, E_TTT),
