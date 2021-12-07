@@ -83,7 +83,6 @@
     Precedence = {
         Sequence: 0,
         Yield: 1,
-        Await: 1,
         Assignment: 1,
         Conditional: 2,
         ArrowFunction: 2,
@@ -99,6 +98,7 @@
         Additive: 11,
         Multiplicative: 12,
         Exponentiation: 13,
+        Await: 13,
         Unary: 14,
         Postfix: 15,
         Call: 16,
