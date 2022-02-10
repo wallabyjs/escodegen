@@ -522,8 +522,8 @@
      * convert generated to a SourceNode when source maps are enabled.
      */
     function toSourceNodeWhenNeeded(generated, node) {
-        if (node && node.type === "PrivateName") {
-            generated = "#" + generated;
+        if (node && (node.type === 'PrivateIdentifier') && !(generated instanceof SourceNode)) {
+            generated = '#' + generated;
         }
         if (!sourceMap) {
             // with no source maps, generated is either an
@@ -2723,23 +2723,25 @@
           return expr.raw;
         },
 
-        FieldDefinition: function(expr, precedence, flags) {
+        PropertyDefinition: function(expr, precedence, flags) {
             var result = [];
 
             if (expr.static) {
               result.push('static ');
             }
 
-            if (expr.key.type === 'PrivateName') {
-                result.push('#');
-            }
-            result.push(expr.key.name);
+            result.push(this.generatePropertyKey(expr.key, expr.computed));
+
             if (expr.value) {
                 result.push(' = ');
                 result.push(this.generateExpression(expr.value));
             }
             result.push(';');
             return result;
+        },
+
+        PrivateIdentifier: function(expr, precedence, flags) {
+            return generateIdentifier(expr);
         },
 
         ImportExpression: function(expr, precedence, flag) {
