@@ -1914,7 +1914,9 @@
         CallExpression: function (expr, precedence, flags) {
             var result, i, iz;
             // F_ALLOW_UNPARATH_NEW becomes false.
-            result = [this.generateExpression(expr.callee, Precedence.Call, E_TTF)];
+            result = expr.callee.type === Syntax.FunctionExpression
+                ? ['(', this.generateExpression(expr.callee, Precedence.Call, E_TTF), ')']
+                : [this.generateExpression(expr.callee, Precedence.Call, E_TTF)];
             if (expr.optional) result.push('?.');
             result.push('(');
             for (i = 0, iz = expr['arguments'].length; i < iz; ++i) {
