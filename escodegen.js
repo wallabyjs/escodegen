@@ -2725,6 +2725,10 @@
           return expr.raw;
         },
 
+        JSXEmptyExpression: function (expr, precedence, flags) {
+          return [];
+        },
+
         PropertyDefinition: function(expr, precedence, flags) {
             var result = [];
 
