@@ -1280,6 +1280,7 @@
                         'from' + space,
                         // ModuleSpecifier
                         this.generateExpression(stmt.source, Precedence.Sequence, E_TTT),
+                        ...this.ImportExportAssertions(stmt.assertions, Precedence.Sequence, E_TTT),
                         this.semicolon(flags)
                     ]);
                 } else {
@@ -1298,6 +1299,7 @@
                 'from' + space,
                 // ModuleSpecifier
                 this.generateExpression(stmt.source, Precedence.Sequence, E_TTT),
+                ...this.ImportExportAssertions(stmt.assertions),
                 this.semicolon(flags)
             ];
         },
@@ -1362,6 +1364,32 @@
             return result;
         },
 
+        ImportExportAssertions: function(assertions) {
+          if (!assertions || assertions.length === 0) {
+            return [];
+          }
+
+          var result = [space, 'assert', space, '{', space];
+          for (var i = 0; i < assertions.length; i++) {
+            if (i > 0) {
+              result.push(',' + space);
+            }
+
+            var assertion = assertions[i];
+            if (assertion.type !== 'ImportAttribute') {
+              throw new Error('Assertion type must be ImportAttribute');
+            }
+
+            result.push(this.generateExpression(assertion.key, Precedence.Sequence, E_TTT));
+            result.push(':' + space);
+            result.push(this.generateExpression(assertion.value, Precedence.Sequence, E_TTT));
+          }
+
+          result.push(space);
+          result.push('}');
+          return result;
+        },
+
         ImportDeclaration: function (stmt, flags) {
             // ES6: 15.2.1 valid import declarations:
             //     - import ImportClause FromClause ;
@@ -1378,6 +1406,7 @@
                     space,
                     // ModuleSpecifier
                     this.generateExpression(stmt.source, Precedence.Sequence, E_TTT),
+                    ...this.ImportExportAssertions(stmt.assertions),
                     this.semicolon(flags)
                 ];
             }
@@ -1444,6 +1473,7 @@
                 'from' + space,
                 // ModuleSpecifier
                 this.generateExpression(stmt.source, Precedence.Sequence, E_TTT),
+                ...this.ImportExportAssertions(stmt.assertions),
                 this.semicolon(flags)
             ]);
             return result;
@@ -2751,11 +2781,19 @@
         },
 
         ImportExpression: function(expr, precedence, flag) {
-            return parenthesize([
-                'import(',
-                this.generateExpression(expr.source, Precedence.Assignment, E_TTT),
-                ')'
-            ], Precedence.Call, precedence);
+          var result = [
+            'import(',
+            this.generateExpression(expr.source, Precedence.Assignment, E_TTT)
+          ];
+
+          if (expr.arguments && expr.arguments.length) {
+            result.push(', ');
+            result.push(this.generateExpression(expr.arguments[0], Precedence.Assignment, E_TTT));
+          }
+
+          result.push(')');
+
+          return parenthesize(result, Precedence.Call, precedence);
         },
 
         OptionalMemberExpression: function(expr, precedence, flag) {
