@@ -1119,6 +1119,12 @@
             return result;
         },
 
+        StaticBlock: function (stmt, flags) {
+            var result = this.BlockStatement(stmt, flags);
+            result.unshift('static ');
+            return result;
+        },
+
         BreakStatement: function (stmt, flags) {
             if (stmt.label) {
                 return 'break ' + stmt.label.name + this.semicolon(flags);
