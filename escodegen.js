@@ -2822,7 +2822,11 @@
             return generateVerbatim(expr, precedence);
         }
 
-        result = this[type](expr, precedence, flags);
+        try {
+          result = this[type](expr, precedence, flags);
+        } catch (e) {
+          throw new Error('Can not generate expression ' + type + '. ' + e && e.message);
+        }
 
 
         if (extra.comment) {
