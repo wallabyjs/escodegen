@@ -1169,7 +1169,11 @@
                 result = join(result, this.generateExpression(stmt.id, Precedence.Sequence, E_TTT));
             }
             if (stmt.superClass) {
-                fragment = join('extends', this.generateExpression(stmt.superClass, Precedence.Assignment, E_TTT));
+                fragment = join('extends', [
+                    '(',
+                    this.generateExpression(stmt.superClass, Precedence.Assignment, E_TTT),
+                    ')'
+                ]);
                 result = join(result, fragment);
             }
             result.push(space);
