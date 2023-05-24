@@ -2199,7 +2199,11 @@
                 result = join(result, this.generateExpression(expr.id, Precedence.Sequence, E_TTT));
             }
             if (expr.superClass) {
-                fragment = join('extends', this.generateExpression(expr.superClass, Precedence.Assignment, E_TTT));
+                fragment = join('extends', [
+                    '(',
+                    this.generateExpression(expr.superClass, Precedence.Assignment, E_TTT),
+                    ')'
+                ]);
                 result = join(result, fragment);
             }
             result.push(space);
