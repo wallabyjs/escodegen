@@ -1291,6 +1291,7 @@
                         // ModuleSpecifier
                         this.generateExpression(stmt.source, Precedence.Sequence, E_TTT),
                         ...this.ImportExportAssertions(stmt.assertions, Precedence.Sequence, E_TTT),
+                        ...this.ImportExportAttributes(stmt.attributes, Precedence.Sequence, E_TTT),
                         this.semicolon(flags)
                     ]);
                 } else {
@@ -1310,6 +1311,7 @@
                 // ModuleSpecifier
                 this.generateExpression(stmt.source, Precedence.Sequence, E_TTT),
                 ...this.ImportExportAssertions(stmt.assertions),
+                ...this.ImportExportAttributes(stmt.attributes),
                 this.semicolon(flags)
             ];
         },
@@ -1374,6 +1376,32 @@
             return result;
         },
 
+        ImportExportAttributes: function(attributes) {
+          if (!attributes || attributes.length === 0) {
+            return [];
+          }
+
+          var result = [space, 'with', space, '{', space];
+          for (var i = 0; i < attributes.length; i++) {
+            if (i > 0) {
+              result.push(',' + space);
+            }
+
+            var attribute = attributes[i];
+            if (attribute.type !== 'ImportAttribute') {
+              throw new Error('attribute type must be ImportAttribute');
+            }
+
+            result.push(this.generateExpression(attribute.key, Precedence.Sequence, E_TTT));
+            result.push(':' + space);
+            result.push(this.generateExpression(attribute.value, Precedence.Sequence, E_TTT));
+          }
+
+          result.push(space);
+          result.push('}');
+          return result;
+        },
+
         ImportExportAssertions: function(assertions) {
           if (!assertions || assertions.length === 0) {
             return [];
@@ -1417,6 +1445,7 @@
                     // ModuleSpecifier
                     this.generateExpression(stmt.source, Precedence.Sequence, E_TTT),
                     ...this.ImportExportAssertions(stmt.assertions),
+                    ...this.ImportExportAttributes(stmt.attributes),
                     this.semicolon(flags)
                 ];
             }
@@ -1484,6 +1513,7 @@
                 // ModuleSpecifier
                 this.generateExpression(stmt.source, Precedence.Sequence, E_TTT),
                 ...this.ImportExportAssertions(stmt.assertions),
+                ...this.ImportExportAttributes(stmt.attributes),
                 this.semicolon(flags)
             ]);
             return result;
