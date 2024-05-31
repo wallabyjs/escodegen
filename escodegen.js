@@ -2814,7 +2814,7 @@
 
             if (expr.value) {
                 result.push(' = ');
-                result.push(this.generateExpression(expr.value));
+                result.push(this.generateExpression(expr.value, Precedence.Assignment));
             }
             result.push(';');
             return result;
