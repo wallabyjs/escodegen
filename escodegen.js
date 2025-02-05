@@ -2846,6 +2846,14 @@
 
         OptionalCallExpression: function(expr, precedence, flag) {
             return this.CallExpression(expr, precedence, flag);
+        },
+
+        ParenthesizedExpression: function(expr, precedence, flags) {
+            return [
+                '(',
+                this.generateExpression(expr.expression, precedence, flags),
+                ')'
+            ];
         }
     };
 
